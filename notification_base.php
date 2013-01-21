@@ -1,22 +1,35 @@
 <?php
+/**
+ * PHP Notifications
+ *
+ * @author Brett O'Donnell - cornernote@gmail.com
+ * @copyright 2013, All Rights Reserved
+ */
 
 /**
+ * Base class for notifications
  *
  */
 class notification_base
 {
     /**
+     * Name of the database table
+     *
      * @var string
      */
     public static $table;
 
     /**
+     * Fields that will be loaded and saved
+     *
      * @var array
      */
     public static $fields = array();
 
     /**
-     * @param int|null $id
+     * Construct a new model, or load a model from database
+     *
+     * @param null $id
      */
     public function __construct($id = null)
     {
@@ -26,8 +39,10 @@ class notification_base
     }
 
     /**
+     * Find all rows matching the criteria
+     *
      * @param $where
-     * @return mixed
+     * @return array
      */
     static public function findAll($where = null)
     {
@@ -45,8 +60,10 @@ class notification_base
     }
 
     /**
+     * Find a single row with the selected id
+     *
      * @param $id
-     * @return mixed
+     * @return array
      */
     static public function findById($id)
     {
@@ -66,6 +83,8 @@ class notification_base
     }
 
     /**
+     * Save this model's attributes to the database
+     *
      * @return mixed
      */
     public function save()

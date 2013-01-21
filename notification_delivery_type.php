@@ -1,4 +1,10 @@
 <?php
+/**
+ * PHP Notifications
+ *
+ * @author Brett O'Donnell - cornernote@gmail.com
+ * @copyright 2013, All Rights Reserved
+ */
 
 /**
  * @method static notification_delivery_type[] findAll()

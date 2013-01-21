@@ -1,10 +1,15 @@
 <?php
+/**
+ * PHP Notifications
+ *
+ * @author Brett O'Donnell - cornernote@gmail.com
+ * @copyright 2013, All Rights Reserved
+ */
 
 require_once('notification_base.php');
 require_once('notification_type.php');
 require_once('notification_delivery_type.php');
 require_once('notification_subscription.php');
-
 
 /**
  * Creates and sends notifications to subscribed users
