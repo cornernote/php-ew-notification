@@ -7,6 +7,9 @@
  * @property $uid int
  * @property $rid int
  * @property $gid int
+ * @property $forum_uid int
+ * @property $email int
+ * @property $phone int
  * @property $type_id int
  * @property $delivery_type_id int
  * @property $created string
@@ -21,6 +24,9 @@ class notification_subscription extends notification_base
         'uid',
         'rid',
         'gid',
+        'forum_uid',
+        'email',
+        'phone',
         'type_id',
         'delivery_type_id',
         'created',

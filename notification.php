@@ -15,6 +15,9 @@ require_once('notification_delivery_type.php');
  * @property $target_rid int
  * @property $target_uid int
  * @property $target_gid string
+ * @property $target_forum_uid string
+ * @property $target_email string
+ * @property $target_phone string
  * @property $type_id int
  * @property $delivery_type_id int
  * @property $message string
@@ -34,6 +37,9 @@ class notification extends notification_base
         'target_rid',
         'target_uid',
         'target_gid',
+        'target_forum_uid',
+        'target_email',
+        'target_phone',
         'type_id',
         'delivery_type_id',
         'message',
@@ -72,6 +78,9 @@ class notification extends notification_base
             $notification->target_rid = $subscription->rid;
             $notification->target_uid = $subscription->uid;
             $notification->target_gid = $subscription->gid;
+            $notification->target_forum_uid = $subscription->forum_uid;
+            $notification->target_email = $subscription->email;
+            $notification->target_phone = $subscription->phone;
             $notification->delivery_type_id = $subscription->delivery_type_id;
 
             // populate log info
@@ -123,28 +132,28 @@ class notification extends notification_base
         $deliveryType = new notification_delivery_type($this->type_id);
         switch ($deliveryType->name) {
             case 'SendMail':
-                $rid = '???';
-                $uid = '???';
+                $rid = $this->target_rid;
+                $uid = $this->target_uid;
                 return notification_delivery_type::sendMail($rid, $uid, $this->message);
 
             case 'SendEmail':
-                $email = '???';
+                $email = $this->target_email;
                 return notification_delivery_type::sendEmail($email, $this->message);
 
             case 'SendPM':
-                $forum_uid = '???';
+                $forum_uid = $this->target_forum_uid;
                 return notification_delivery_type::sendPM($forum_uid, $this->message);
 
             case 'sendAnnouncement':
-                $rid = '???';
+                $rid = $this->target_rid;
                 return notification_delivery_type::sendAnnouncement($rid, $this->message);
 
             case 'sendGMAnnouncement':
-                $rid = '???';
+                $rid = $this->target_rid;
                 return notification_delivery_type::sendGMAnnouncement($rid, $this->message);
 
             case 'SendSMS':
-                $phone = '???';
+                $phone = $this->target_phone;
                 return notification_delivery_type::sendSMS($phone, $this->message);
         }
         return false;
