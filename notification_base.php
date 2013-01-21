@@ -20,6 +20,13 @@ class notification_base
     public static $table;
 
     /**
+     * Name of the primary key field
+     *
+     * @var string
+     */
+    public static $primaryKey = 'id';
+
+    /**
      * Fields that will be loaded and saved
      *
      * @var array
@@ -29,12 +36,12 @@ class notification_base
     /**
      * Construct a new model, or load a model from database
      *
-     * @param null $id
+     * @param null $pk
      */
-    public function __construct($id = null)
+    public function __construct($pk = null)
     {
-        if ($id) {
-            return $this->findById($id);
+        if ($pk) {
+            return $this->findByPk($pk);
         }
     }
 
@@ -46,36 +53,38 @@ class notification_base
      */
     static public function findAll($where = null)
     {
+		$class = get_called_class();
         $results = array();
         $where = $where ? " WHERE $where" : '';
-        foreach (self::$fields as $field) {
+        foreach ($class::$fields as $field) {
             $fields[] = "`$field`";
         }
-        $query = "SELECT " . implode(', ', self::$fields) . " FROM `" . self::$table . "`" . $where;
+        $query = "SELECT " . implode(', ', array_merge($class::$fields,array($class::$primaryKey))) . " FROM `" . $class::$table . "`" . $where;
         $result = $_ENV['DB']->Query($_ENV['config']['dbconn'], $query);
         while ($data = $_ENV['DB']->FetchArray($_ENV['config']['dbconn'], $result)) {
-            $results[] = self::findById($data['id']);
+            $results[] = $class::findByPk($data['id']);
         }
         return $results;
     }
 
     /**
-     * Find a single row with the selected id
+     * Find a single row with the selected pk
      *
-     * @param $id
+     * @param $pk
      * @return array
      */
-    static public function findById($id)
+    static public function findByPk($pk)
     {
+		$class = get_called_class();
         $fields = array();
-        foreach (self::$fields as $field) {
+        foreach ($class::$fields as $field) {
             $fields[] = "`$field`";
         }
-        $query = "SELECT " . implode(', ', $fields) . " FROM `" . self::$table . "` WHERE id='" . (int)$id . "'";
+        $query = "SELECT " . implode(', ', $fields) . " FROM `" . $class::$table . "` WHERE `" . $class::$primaryKey . "`='" . (int)$pk . "'";
         $result = $_ENV['DB']->Query($_ENV['config']['dbconn'], $query);
         $data = $_ENV['DB']->FetchArray($_ENV['config']['dbconn'], $result);
 
-        $model = new get_called_class();
+        $model = new $class();
         foreach ($data as $k => $v) {
             $model->$k = $v;
         }
@@ -89,14 +98,18 @@ class notification_base
      */
     public function save()
     {
+		$class = get_called_class();
+		$pk = $class::$primaryKey;
         $fields = array();
-        foreach (self::$fields as $field) {
-            $value = $_ENV['DB']->Escape($this->$field);
-            $fields[] = "`$field`='$value'";
+        foreach ($class::$fields as $field) {
+			if (isset($this->$field)) {
+				$value = $_ENV['DB']->Escape($_ENV['config']['dbconn'], $this->$field);
+				$fields[] = "`$field`='$value'";
+			}
         }
-        $query = $this->id ? "UPDATE " : "INSERT INTO `" . self::$table . "` SET " . implode(', ', $fields);
-        if ($this->id) {
-            $query .= " WHERE `id`='" . (int)$this->id . "'";
+        $query = (isset($this->$pk) ? "UPDATE " : "INSERT INTO `") . $class::$table . "` SET " . implode(', ', $fields);
+        if (isset($this->$pk)) {
+            $query .= " WHERE `" . $class::$primaryKey . "`='" . (int)$this->$pk . "'";
         }
         return $_ENV['DB']->Query($_ENV['config']['dbconn'], $query);
     }

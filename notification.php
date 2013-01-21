@@ -15,7 +15,7 @@ require_once('notification_subscription.php');
  * Creates and sends notifications to subscribed users
  *
  * @method static notification[] findAll()
- * @method static notification findById()
+ * @method static notification findByPk()
  *
  * @property $author string
  * @property $target_rid int
@@ -73,6 +73,7 @@ class notification extends notification_base
      */
     static public function create($author, $type_id, $message, $priority)
     {
+	
         // find all the subscriptions to this notification type
         $subscriptions = notification_subscription::findAll("`type_id`='" . (int)$type_id . "'");
         foreach ($subscriptions as $subscription) {
@@ -115,7 +116,7 @@ class notification extends notification_base
     static public function spool()
     {
         // find all notifications that are ready to be sent
-        $notifications = notification::findAll('`status`=0');
+        $notifications = notification::findAll('`status` IS NULL');
         foreach ($notifications as $notification) {
             // send the notification
             if ($notification->send()) {
@@ -141,7 +142,7 @@ class notification extends notification_base
     private function send()
     {
         // find which type of notification we are sending, then send
-        $deliveryType = new notification_delivery_type($this->type_id);
+        $deliveryType = notification_delivery_type::findByPk($this->type_id);
         switch ($deliveryType->name) {
             case 'Mail':
                 $rid = $this->target_rid;

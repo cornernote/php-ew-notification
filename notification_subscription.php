@@ -8,7 +8,7 @@
 
 /**
  * @method static notification_subscription[] findAll()
- * @method static notification_subscription findById()
+ * @method static notification_subscription findByPk()
  *
  * @property $uid int
  * @property $rid int

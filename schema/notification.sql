@@ -13,6 +13,7 @@ CREATE TABLE `notification` (
   `target_gid` int(11) DEFAULT NULL,
   `target_forum_uid` int(11) DEFAULT NULL,
   `target_phone` varchar(255) DEFAULT NULL,
+  `target_email` varchar(255) DEFAULT NULL,
   `type_id` int(11) DEFAULT NULL,
   `delivery_type_id` int(11) DEFAULT NULL,
   `message` varchar(255) DEFAULT NULL,

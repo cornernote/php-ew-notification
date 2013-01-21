@@ -8,7 +8,7 @@
 
 /**
  * @method static notification_type[] findAll()
- * @method static notification_type findById()
+ * @method static notification_type findByPk()
  *
  * @property $name string
  * @property $priority int
