@@ -1,3 +1,10 @@
+/**
+ * PHP Notifications
+ *
+ * @author Brett O'Donnell - cornernote@gmail.com
+ * @copyright 2013, All Rights Reserved
+ */
+
 CREATE TABLE `notification` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `author` varchar(255) DEFAULT NULL,
