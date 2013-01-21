@@ -8,12 +8,12 @@ class notification_base
     /**
      * @var string
      */
-    protected $table;
+    public static $table;
 
     /**
      * @var array
      */
-    protected $fields = array();
+    public static $fields = array();
 
     /**
      * @param int|null $id
@@ -29,38 +29,40 @@ class notification_base
      * @param $where
      * @return mixed
      */
-    public function findAll($where = null)
+    static public function findAll($where = null)
     {
         $results = array();
         $where = $where ? " WHERE $where" : '';
-        foreach ($this->fields as $field) {
+        foreach (self::$fields as $field) {
             $fields[] = "`$field`";
         }
-        $query = "SELECT " . implode(', ', $this->fields) . " FROM `" . $this->table . "`" . $where;
+        $query = "SELECT " . implode(', ', self::$fields) . " FROM `" . self::$table . "`" . $where;
         $result = $_ENV['DB']->Query($_ENV['config']['dbconn'], $query);
         while ($data = $_ENV['DB']->FetchArray($_ENV['config']['dbconn'], $result)) {
-            $results[] = $this->findById($data['id']);
+            $results[] = self::findById($data['id']);
         }
-        return $this;
+        return $results;
     }
 
     /**
      * @param $id
      * @return mixed
      */
-    public function findById($id)
+    static public function findById($id)
     {
         $fields = array();
-        foreach ($this->fields as $field) {
+        foreach (self::$fields as $field) {
             $fields[] = "`$field`";
         }
-        $query = "SELECT " . implode(', ', $fields) . " FROM `" . $this->table . "` WHERE id='" . (int)$id . "'";
+        $query = "SELECT " . implode(', ', $fields) . " FROM `" . self::$table . "` WHERE id='" . (int)$id . "'";
         $result = $_ENV['DB']->Query($_ENV['config']['dbconn'], $query);
         $data = $_ENV['DB']->FetchArray($_ENV['config']['dbconn'], $result);
+
+        $model = new get_called_class();
         foreach ($data as $k => $v) {
-            $this->$k = $v;
+            $model->$k = $v;
         }
-        return $this;
+        return $model;
     }
 
     /**
@@ -69,13 +71,11 @@ class notification_base
     public function save()
     {
         $fields = array();
-        foreach ($this->fields as $field) {
+        foreach (self::$fields as $field) {
             $value = $_ENV['DB']->Escape($this->$field);
             $fields[] = "`$field`='$value'";
         }
-        $query = $this->id ? 'UPDATE ' : 'INSERT INTO ';
-        $query .= "`" . $this->table . "` SET ";
-        $query .= implode(', ', $fields);
+        $query = $this->id ? "UPDATE " : "INSERT INTO `" . self::$table . "` SET " . implode(', ', $fields);
         if ($this->id) {
             $query .= " WHERE `id`='" . (int)$this->id . "'";
         }

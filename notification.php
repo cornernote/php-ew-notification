@@ -6,8 +6,8 @@ require_once('notify.php');
 
 
 /**
- * @method notification[] findAll()
- * @method notification findById()
+ * @method static notification[] findAll()
+ * @method static notification findById()
  *
  * @property $author string
  * @property $target_rid int
@@ -26,7 +26,7 @@ class notification extends notification_base
     /**
      * @var array
      */
-    protected $fields = array(
+    static public $fields = array(
         'author',
         'target_rid',
         'target_uid',
@@ -45,7 +45,7 @@ class notification extends notification_base
      * @param $type
      * @param $message
      * @param $priority
-     * @return mixed
+     * @return \notification
      */
     static public function create($author, $type, $message, $priority)
     {
@@ -64,9 +64,9 @@ class notification extends notification_base
     /**
      *
      */
-    public function spool()
+    static public function spool()
     {
-        $notifications = $this->findAll('`status`=0');
+        $notifications = notification::findAll('`status`=0');
         foreach ($notifications as $notification) {
             if ($notification->send()) {
                 $notification->status = 1;
