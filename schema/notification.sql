@@ -38,6 +38,16 @@ CREATE TABLE `notification_type` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;
 
+INSERT INTO `notification_type` VALUES ('1', 'Tickets');
+INSERT INTO `notification_type` VALUES ('2', 'Manual Transactions');
+INSERT INTO `notification_type` VALUES ('3', 'Account Recovery');
+INSERT INTO `notification_type` VALUES ('4', 'Character Migrations');
+INSERT INTO `notification_type` VALUES ('5', 'Custom VIP');
+INSERT INTO `notification_type` VALUES ('6', 'Identities');
+INSERT INTO `notification_type` VALUES ('7', 'Billing Records');
+INSERT INTO `notification_type` VALUES ('8', 'Redmine Tasks');
+INSERT INTO `notification_type` VALUES ('9', 'Action Logging (high priority alerts only)');
+
 CREATE TABLE `notification_delivery_type` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,

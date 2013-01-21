@@ -3,6 +3,7 @@
 require_once('notification_base.php');
 require_once('notification_type.php');
 require_once('notification_delivery_type.php');
+require_once('notification_subscription.php');
 
 
 /**
