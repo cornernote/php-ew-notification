@@ -8,6 +8,12 @@
  */
 class notification_delivery_type extends notification_base
 {
+
+    /**
+     * @var string
+     */
+    static public $table = 'notification_delivery_type';
+
     /**
      * @var array
      */
@@ -84,6 +90,5 @@ class notification_delivery_type extends notification_base
     {
         return false;
     }
-
 
 }

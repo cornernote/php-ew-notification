@@ -29,6 +29,12 @@ require_once('notification_delivery_type.php');
  */
 class notification extends notification_base
 {
+
+    /**
+     * @var string
+     */
+    static public $table = 'notification';
+
     /**
      * @var array
      */
@@ -128,31 +134,31 @@ class notification extends notification_base
      */
     private function send()
     {
-        // find which type of notification we are sending
+        // find which type of notification we are sending, then send
         $deliveryType = new notification_delivery_type($this->type_id);
         switch ($deliveryType->name) {
-            case 'SendMail':
+            case 'Mail':
                 $rid = $this->target_rid;
                 $uid = $this->target_uid;
                 return notification_delivery_type::sendMail($rid, $uid, $this->message);
 
-            case 'SendEmail':
+            case 'Email':
                 $email = $this->target_email;
                 return notification_delivery_type::sendEmail($email, $this->message);
 
-            case 'SendPM':
+            case 'PM':
                 $forum_uid = $this->target_forum_uid;
                 return notification_delivery_type::sendPM($forum_uid, $this->message);
 
-            case 'sendAnnouncement':
+            case 'Announcement':
                 $rid = $this->target_rid;
                 return notification_delivery_type::sendAnnouncement($rid, $this->message);
 
-            case 'sendGMAnnouncement':
+            case 'GMAnnouncement':
                 $rid = $this->target_rid;
                 return notification_delivery_type::sendGMAnnouncement($rid, $this->message);
 
-            case 'SendSMS':
+            case 'SMS':
                 $phone = $this->target_phone;
                 return notification_delivery_type::sendSMS($phone, $this->message);
         }

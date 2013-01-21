@@ -10,13 +10,17 @@
  */
 class notification_type extends notification_base
 {
+
+    /**
+     * @var string
+     */
+    static public $table = 'notification_type';
+
     /**
      * @var array
      */
     static public $fields = array(
         'name',
-        'priority',
-        'target_page',
     );
 
 }

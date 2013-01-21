@@ -17,6 +17,12 @@
  */
 class notification_subscription extends notification_base
 {
+
+    /**
+     * @var string
+     */
+    static public $table = 'notification_subscription';
+
     /**
      * @var array
      */
