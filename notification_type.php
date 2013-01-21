@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @method static notification[] findAll()
- * @method static notification findById()
+ * @method static notification_type[] findAll()
+ * @method static notification_type findById()
  *
  * @property $name string
  * @property $priority int

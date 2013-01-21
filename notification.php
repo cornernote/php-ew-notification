@@ -2,18 +2,21 @@
 
 require_once('notification_base.php');
 require_once('notification_type.php');
-require_once('notify.php');
+require_once('notification_delivery_type.php');
 
 
 /**
+ * Creates and sends notifications to subscribed users
+ *
  * @method static notification[] findAll()
  * @method static notification findById()
  *
  * @property $author string
  * @property $target_rid int
  * @property $target_uid int
- * @property $target_group string
- * @property $type int
+ * @property $target_gid string
+ * @property $type_id int
+ * @property $delivery_type_id int
  * @property $message string
  * @property $status int
  * @property $priority int
@@ -30,8 +33,9 @@ class notification extends notification_base
         'author',
         'target_rid',
         'target_uid',
-        'target_group',
-        'type',
+        'target_gid',
+        'type_id',
+        'delivery_type_id',
         'message',
         'status',
         'priority',
@@ -41,75 +45,107 @@ class notification extends notification_base
     );
 
     /**
+     * Save a notification to users who are subscribed to this type
+     *
      * @param $author
-     * @param $type
+     * @param $type_id
      * @param $message
      * @param $priority
-     * @return \notification
+     * @return bool
      */
-    static public function create($author, $type, $message, $priority)
+    static public function create($author, $type_id, $message, $priority)
     {
-        $notification = new notification();
-        $notification->author = $author;
-        $notification->type = $type;
-        $notification->message = $message;
-        $notification->priority = $priority;
-        $notification->created = date('Y-m-d H:i:s');
-        $notification->ip = $_SERVER['REMOTE_ADDR'];
-        if ($notification->save()) {
-            return $notification;
+        // find all the subscriptions to this notification type
+        $subscriptions = notification_subscription::findAll("`type_id`='" . (int)$type_id . "'");
+        foreach ($subscriptions as $subscription) {
+
+            // create new notification
+            $notification = new notification();
+
+            // populate notification attributes
+            $notification->author = $author;
+            $notification->type_id = $type_id;
+            $notification->message = $message;
+            $notification->priority = $priority;
+
+            // populate subscription attributes
+            $notification->target_rid = $subscription->rid;
+            $notification->target_uid = $subscription->uid;
+            $notification->target_gid = $subscription->gid;
+            $notification->delivery_type_id = $subscription->delivery_type_id;
+
+            // populate log info
+            $notification->created = date('Y-m-d H:i:s');
+            $notification->ip = $_SERVER['REMOTE_ADDR'];
+
+            // save to database
+            if (!$notification->save()) {
+                return false;
+            }
+
         }
+        return true;
     }
 
     /**
+     * Sends all pending notifications
      *
      */
     static public function spool()
     {
+        // find all notifications that are ready to be sent
         $notifications = notification::findAll('`status`=0');
         foreach ($notifications as $notification) {
+            // send the notification
             if ($notification->send()) {
+                // set success
                 $notification->status = 1;
             }
             else {
+                // set error
                 $notification->status = -1;
             }
+            // set the timestamp
             $notification->sent = date('Y-m-d H:i:s');
+            // save the record
             $notification->save();
         }
     }
 
     /**
+     * Send a notification
+     *
      * @return bool
      */
     private function send()
     {
-        $notificationType = new notification_type($this->type);
-        switch ($notificationType->name) {
+        // find which type of notification we are sending
+        $deliveryType = new notification_delivery_type($this->type_id);
+        switch ($deliveryType->name) {
             case 'SendMail':
                 $rid = '???';
                 $uid = '???';
-                return Notify::sendMail($rid, $uid, $this->message);
+                return notification_delivery_type::sendMail($rid, $uid, $this->message);
 
             case 'SendEmail':
                 $email = '???';
-                return Notify::sendEmail($email, $this->message);
+                return notification_delivery_type::sendEmail($email, $this->message);
 
             case 'SendPM':
                 $forum_uid = '???';
-                return Notify::sendPM($forum_uid, $this->message);
+                return notification_delivery_type::sendPM($forum_uid, $this->message);
 
             case 'sendAnnouncement':
                 $rid = '???';
-                return Notify::sendAnnouncement($rid, $this->message);
+                return notification_delivery_type::sendAnnouncement($rid, $this->message);
 
             case 'sendGMAnnouncement':
                 $rid = '???';
-                return Notify::sendGMAnnouncement($rid, $this->message);
+                return notification_delivery_type::sendGMAnnouncement($rid, $this->message);
 
             case 'SendSMS':
                 $phone = '???';
-                return Notify::sendSMS($phone, $this->message);
+                return notification_delivery_type::sendSMS($phone, $this->message);
         }
         return false;
     }

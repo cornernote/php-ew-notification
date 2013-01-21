@@ -1,9 +1,19 @@
 <?php
+
 /**
+ * @method static notification_delivery_type[] findAll()
+ * @method static notification_delivery_type findById()
  *
+ * @property $name string
  */
-class Notify
+class notification_delivery_type extends notification_base
 {
+    /**
+     * @var array
+     */
+    static public $fields = array(
+        'name',
+    );
 
     /**
      * @param $rid
@@ -74,5 +84,6 @@ class Notify
     {
         return false;
     }
+
 
 }
