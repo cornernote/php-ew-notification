@@ -41,7 +41,11 @@ class notification_base
     public function __construct($pk = null)
     {
         if ($pk) {
-            return $this->findByPk($pk);
+            $class = get_class($this);
+            $model = $class::findByPk($pk);
+            foreach ($class::$fields as $field) {
+                $this->$field = $model->$field;
+            }
         }
     }
 
