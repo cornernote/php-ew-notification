@@ -6,7 +6,7 @@
  * @copyright 2013, All Rights Reserved
  */
 
-require_once('../db.php');
+require_once('../../class/mysql.php');
 require_once('../notification.php');
  
 $_ENV['config']['dbconn'] = 'test';
